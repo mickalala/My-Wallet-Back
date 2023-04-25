@@ -22,8 +22,6 @@ const siginSchema = joi.object({
     password: joi.string().required().min(3)
 })
 
-
-
 app.post("/cadastro", async (req, res) => {
     const { name, email, password } = req.body
     const validation = siginSchema.validate(req.body, { abortEarly: false })
@@ -37,21 +35,21 @@ app.post("/cadastro", async (req, res) => {
     const existenUser = await db.collection("users").findOne({ email: email })
     if (existenUser) res.sendStatus(409)
     try {
-        await db.collection("users").insertOne({ name, email, password:passwordHash })
+        await db.collection("users").insertOne({ name, email, password: passwordHash })
 
         return res.sendStatus(201)
     } catch (error) {
-        res.status(500).send(err.message)
+        res.status(500).send(error.message)
     }
 })
 
 app.post("/", async (req, res) => {
     const { email, password } = req.body
-    const userSchema= joi.object({
+    const userSchema = joi.object({
         email: joi.string().email().required(),
         password: joi.string().required()
     })
-    const validation= userSchema.validate(req.body, {abortEarly:false})
+    const validation = userSchema.validate(req.body, { abortEarly: false })
     if (validation.error) {
         const errors = validation.error.details.map((detail) => detail.message)
         console.log(errors)
@@ -70,9 +68,43 @@ app.post("/", async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
-
-
 })
 
-const PORT = 5000
-app.listen(PORT, () => console.log(`tá rodando na pourtaaaaa :: ${PORT}`))
+app.post("/nova-transacao/:tipo", async (req, res) => {
+    const { tipo } = req.params
+    const { value, description } = req.body
+    const { authorization } = req.headers
+    const token = authorization?.replace("Bearer ", "")
+
+    if (!token) return res.sendStatus(401)
+
+    const transactionScheme = joi.object({
+        value: joi.number().positive().required(),
+        description: joi.string().required()
+    })
+    const validation = transactionScheme.validate(req.body, { abortEarly: false })
+
+    if (validation.error) {
+        const errors = validation.error.details.map((detail) => detail.message)
+        console.log(errors)
+        return res.status(422).send(errors)
+    }
+    await db.collection("transactions").insertOne({ value, description, type: tipo })
+    res.sendStatus(200)
+})
+
+app.get("/home", async (req, res) => {
+    const { authorization } = req.headers
+    const token = authorization?.replace("Bearer ", "")
+
+    if (!token) return res.sendStatus(401)
+
+    try {
+        const transactions = await db.collection("transactions").find().toArray()
+        res.send(transactions)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+app.listen(process.env.PORT, () => console.log(`tá rodando na pourtaaaaa :: ${process.env.PORT}`))
