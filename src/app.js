@@ -89,7 +89,7 @@ app.post("/nova-transacao/:tipo", async (req, res) => {
         console.log(errors)
         return res.status(422).send(errors)
     }
-    await db.collection("transactions").insertOne({ value, description, type: tipo })
+    await db.collection("transactions").insertOne({ value, description, type: new String(tipo) })
     res.sendStatus(200)
 })
 
