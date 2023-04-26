@@ -34,8 +34,7 @@ export async function showTransactions(req, res) {
     if (!token) return res.sendStatus(401)
 
     try {
-        const {userId} = res.locals.sessoes;
-        console.log(userId)
+
         const transactions = await db.collection("transactions").find().toArray()
         res.send(transactions)
     } catch (error) {
