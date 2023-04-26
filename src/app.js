@@ -2,8 +2,8 @@ import express from "express"
 import cors from "cors"
 import { MongoClient } from "mongodb"
 import dotenv from "dotenv"
-import { cadastro,login } from "./controllers/auth.controllers.js"
-import { transaction, showTransactions } from "./controllers/transaction.controllers.js"
+import authRouter from "./routes/auth.routes.js"
+import transRouter from "./routes/transactions.routes.js"
 const app = express()
 
 app.use(cors())
@@ -19,12 +19,7 @@ try {
 }
 export const db = mongoClient.db()
 
-app.post("/cadastro", cadastro)
-
-app.post("/", login)
-
-app.post("/nova-transacao/:tipo", transaction)
-
-app.get("/home", showTransactions)
+app.use(authRouter)
+app.use(transRouter)
 
 app.listen(process.env.PORT, () => console.log(`tá rodando na pourtaaaaa :: ${process.env.PORT}`))
