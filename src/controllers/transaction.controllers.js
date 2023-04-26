@@ -1,10 +1,11 @@
-import {db} from "../app.js"
+import { db } from "../app.js"
 import joi from "joi"
 
 export async function transaction(req, res) {
     const { value, description, type } = req.body
     const { authorization } = req.headers
     const token = authorization?.replace("Bearer ", "")
+
 
     if (!token) return res.sendStatus(401)
 
@@ -26,12 +27,15 @@ export async function transaction(req, res) {
 }
 
 export async function showTransactions(req, res) {
+
     const { authorization } = req.headers
     const token = authorization?.replace("Bearer ", "")
 
     if (!token) return res.sendStatus(401)
 
     try {
+        const {userId} = res.locals.sessoes;
+        console.log(userId)
         const transactions = await db.collection("transactions").find().toArray()
         res.send(transactions)
     } catch (error) {
