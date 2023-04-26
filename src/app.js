@@ -71,8 +71,7 @@ app.post("/", async (req, res) => {
 })
 
 app.post("/nova-transacao/:tipo", async (req, res) => {
-    const { tipo } = req.params
-    const { value, description } = req.body
+    const { value, description ,type} = req.body
     const { authorization } = req.headers
     const token = authorization?.replace("Bearer ", "")
 
@@ -80,7 +79,8 @@ app.post("/nova-transacao/:tipo", async (req, res) => {
 
     const transactionScheme = joi.object({
         value: joi.number().positive().required(),
-        description: joi.string().required()
+        description: joi.string().required(),
+        type: joi.string().valid(':entrada', ':saida').required()
     })
     const validation = transactionScheme.validate(req.body, { abortEarly: false })
 
@@ -89,7 +89,7 @@ app.post("/nova-transacao/:tipo", async (req, res) => {
         console.log(errors)
         return res.status(422).send(errors)
     }
-    await db.collection("transactions").insertOne({ value, description, type: new String(tipo) })
+    await db.collection("transactions").insertOne({ value, description, type})
     res.sendStatus(200)
 })
 
