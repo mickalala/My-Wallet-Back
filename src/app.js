@@ -80,7 +80,7 @@ app.post("/nova-transacao/:tipo", async (req, res) => {
     const transactionScheme = joi.object({
         value: joi.number().positive().required(),
         description: joi.string().required(),
-        type: joi.string().valid(':entrada', ':saida').required()
+        type: joi.string().any().valid(':entrada', ':saida').required()
     })
     const validation = transactionScheme.validate(req.body, { abortEarly: false })
 
