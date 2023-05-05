@@ -51,7 +51,7 @@ export async function login(req, res) {
 
         const token = uuid()
         await db.collection("sessoes").insertOne({ token, userId: user._id })
-        res.status(200).send(token)
+        res.cookie("esse cookie", "valuuue").status(200).send(token)
     } catch (error) {
         res.status(500).send(error.message)
     }
