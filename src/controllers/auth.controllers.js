@@ -1,4 +1,4 @@
-import {db} from "../app.js"
+import { db } from "../app.js"
 import joi from "joi"
 import bcrypt from 'bcrypt'
 import { v4 as uuid } from "uuid"
@@ -23,7 +23,7 @@ export async function cadastro(req, res) {
     if (existenUser) res.sendStatus(409)
     try {
         await db.collection("users").insertOne({ name, email, password: passwordHash })
-
+        res.cookie("lala esse é o nome","agora o value")
         return res.sendStatus(201)
     } catch (error) {
         res.status(500).send(error.message)

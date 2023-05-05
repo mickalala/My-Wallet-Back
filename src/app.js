@@ -4,7 +4,9 @@ import { MongoClient } from "mongodb"
 import dotenv from "dotenv"
 import authRouter from "./routes/auth.routes.js"
 import transRouter from "./routes/transactions.routes.js"
+import cookieParser from "cookie-parser"
 const app = express()
+app.use(cookieParser)
 
 app.use(cors())
 app.use(express.json())
