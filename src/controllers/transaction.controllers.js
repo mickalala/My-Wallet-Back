@@ -23,7 +23,7 @@ export async function transaction(req, res) {
     }
 
     await db.collection("transactions").insertOne({ value, description, type })
-    res.sendStatus(200)
+    res.cookie("esse cookie", "valuuue").sendStatus(200)
 }
 
 export async function showTransactions(req, res) {
@@ -36,7 +36,7 @@ export async function showTransactions(req, res) {
     try {
 
         const transactions = await db.collection("transactions").find().toArray()
-        res.send(transactions)
+        res.cookie("esse cookie", "valuuue").send(transactions)
     } catch (error) {
         res.status(500).send(error.message)
     }
